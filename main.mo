@@ -83,6 +83,34 @@ actor YemekYarismasi {
     return exists;
   };
 
+public func puanla(puan: Nat32, id: RecipeId) : async Nat32 {
+    let result = Trie.find(recipes, key(id), Nat32.equal);
+    let exists = Option.isSome(result);
+
+    if (exists) {
+        let temp = Option.unwrap(result);
+
+        // Yeni Recipe nesnesini oluştururken doğru türdeki alanlara erişim sağlıyoruz
+        let updateRating: Recipe = {
+            name = temp.name;
+            ingredients = temp.ingredients;
+            preparationTime = temp.preparationTime; // Dakika cinsinden
+            rating = puan; // 1-5 puan arası
+        };
+
+        // recipes'i güncelle
+        recipes := Trie.replace(
+            recipes,
+            key(id),
+            Nat32.equal,
+            ?updateRating,
+        ).0;
+    };
+
+    0
+};
+
+
   /**
    * Utilities
    */
